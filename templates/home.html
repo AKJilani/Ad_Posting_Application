@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}All Ads{% endblock %}
+{% block content %}
+<h2>Recent Ads</h2>
+<div class="row">
+    {% for ad in ads %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ ad.title }}</h5>
+                    <p class="card-text">{{ ad.description }}</p>
+                    <p><strong>Price:</strong> {{ ad.price }} BDT</p>
+                    <p><small class="text-muted">Posted by {{ ad.username }} on {{ ad.date_posted }}</small></p>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <p>No ads found.</p>
+    {% endfor %}
+</div>
+{% endblock %}
