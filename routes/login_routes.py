@@ -28,4 +28,4 @@ def login():
 def logout():
     session.clear()  # Clear all session data
     flash('🔒 You have been logged out successfully.', 'info')
-    return redirect('/login')  # Redirect to login or homepage
+    return redirect('/')  # Redirect to login or homepage

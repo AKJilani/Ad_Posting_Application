@@ -1,0 +1,218 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    padding: 20px;
+    color: #333;
+}
+
+/* Listings Container - Grid Layout */
+.listings-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Apartment Card */
+.apartment-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.apartment-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Card Header */
+.card-header {
+    padding: 15px;
+    position: relative;
+    border-bottom: 1px solid #eee;
+}
+
+.availability-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #32cd32;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    color: #2c3e50;
+    margin-right: 60px;
+}
+
+/* Card Highlights */
+.card-highlights {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-price {
+    color: #2980b9;
+}
+
+.price-amount {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.price-period {
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.quick-features {
+    display: flex;
+    gap: 12px;
+}
+
+.quick-features span {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #555;
+}
+
+.quick-features i {
+    margin-right: 4px;
+    color: #7f8c8d;
+}
+
+/* Card Actions */
+.card-actions {
+    display: flex;
+    border-top: 1px solid #eee;
+}
+
+.call-btn, .details-btn {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+    color: #2980b9;
+    text-decoration: none;
+}
+
+.call-btn {
+    border-right: 1px solid #eee;
+}
+
+.call-btn:hover, .details-btn:hover {
+    background-color: #f8f9fa;
+}
+
+.call-btn i, .details-btn i {
+    margin-right: 5px;
+}
+
+/* Card Details (Hidden by default) */
+.card-details {
+    padding: 15px;
+    border-top: 1px solid #eee;
+    background-color: #f8f9fa;
+}
+
+/* Details Grid */
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.detail-item {
+    font-size: 14px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #555;
+    margin-right: 5px;
+}
+
+/* Features List */
+.features-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.feature-item {
+    background-color: #e3f2fd;
+    color: #2980b9;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+
+.feature-item i {
+    margin-right: 5px;
+}
+
+/* Full Description */
+.full-description {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* Full Address */
+.full-address {
+    font-size: 14px;
+    color: #7f8c8d;
+    display: flex;
+    align-items: center;
+}
+
+.full-address i {
+    margin-right: 5px;
+    color: #e74c3c;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .listings-container {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .listings-container {
+        grid-template-columns: 1fr;
+    }
+}

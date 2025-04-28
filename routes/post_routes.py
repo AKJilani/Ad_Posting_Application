@@ -35,3 +35,7 @@ def post_ad():
         return redirect('/dashboard')
 
     return render_template('post_ad.html')
+
+@bp.route('/Check_route', methods=['GET', 'POST'])
+def check_route():
+    return render_template('ad_apartment.html')
