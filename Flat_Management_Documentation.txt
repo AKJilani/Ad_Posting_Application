@@ -39,6 +39,7 @@ Flat_Management/
 │   ├── home.html
 │   ├── login.html
 │   ├── post_ad.html
+|   |-- post_ad_apartment.html
 │   └── register.html
 ```
 
