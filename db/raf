@@ -1,0 +1,24 @@
+Ad_Apartment DB table Requirement
+---------------------------------
+1.	Id
+2.	Type
+3.	Apartment Type
+4.	Building Number
+5.	Apartment Number
+6.	Address
+7.	Rent Per Month
+8.	Bedroom
+9.	Bathroom
+10.	Parking Facility
+11.	Phone Number
+12.	Available From
+13.	Advance
+14.	Tenant Type
+15.	Security
+16.	Water
+17.	Description
+18.	Restrictions
+19.	Active Status
+20.	Post Date
+21.	User id
+22. Parking Facility

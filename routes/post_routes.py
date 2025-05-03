@@ -36,6 +36,27 @@ def post_ad():
 
     return render_template('post_ad.html')
 
+@bp.route('/post_ad_apartment', methods=['GET', 'POST'])
+def post_ad_apartment():
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    if request.method == 'POST':
+        title = request.form['title']
+        desc = request.form['description']
+        price = request.form['price']
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO ads (title, description, price, user_id) VALUES (?, ?, ?, ?)",
+                       (title, desc, price, session['user_id']))
+        conn.commit()
+        conn.close()
+        return redirect('/dashboard')
+
+    return render_template('ad_apartment.html')
+
+
 @bp.route('/Check_route', methods=['GET', 'POST'])
 def check_route():
-    return render_template('ad_apartment.html')
+    return render_template('post_ad_apartment.html')
