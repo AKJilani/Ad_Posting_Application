@@ -31,8 +31,7 @@ CREATE TABLE IF NOT EXISTS ads (
 # create ad_aparement table
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS ad_apartment (
-    Id INTEGER NOT NULL,
-    Type TEXT NOT NULL,
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Building_Number INTEGER NOT NULL,
     Apartment_Type TEXT NOT NULL,
     Apartment_Number TEXT NOT NULL,
@@ -51,9 +50,10 @@ CREATE TABLE IF NOT EXISTS ad_apartment (
     Restrictions TEXT NOT NULL,
     Post_Date TEXT DEFAULT CURRENT_TIMESTAMP,
     user_id INTEGER,
-    Ad_Active_Status TEXT NOT NULL,
-    PRIMARY KEY (Id, Building_Number, Apartment_Type, Apartment_Number)
+    Ad_Active_Status INTEGER DEFAULT 0 NOT NULL
 )
+
+
 ''')
 
 

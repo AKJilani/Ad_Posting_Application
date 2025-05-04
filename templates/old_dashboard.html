@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Your Dashboard{% endblock %}
+{% block content %}
+<h2>My Ads</h2>
+<a href="/post_ad" class="btn btn-primary mb-3">Post New Ad</a>
+{% if ads %}
+    <ul class="list-group">
+        {% for ad in ads %}
+            <li class="list-group-item">
+                <strong>{{ ad.title }}</strong><br>
+                {{ ad.description }}<br>
+                <small>{{ ad.price }} BDT</small>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have not posted any ads yet.</p>
+{% endif %}
+{% endblock %}
