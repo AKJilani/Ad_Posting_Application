@@ -12,6 +12,7 @@ def dashboard():
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM ad_apartment WHERE user_id=? ORDER BY Post_Date DESC", (session['user_id'],))
     ads = cursor.fetchall()
+    print(ads)  # Debugging line to check the fetched ads
     conn.close()
 
     return render_template('dashboard.html', ads=ads)

@@ -11,6 +11,7 @@ Apartments for Rent
 
 {% block content %}
 <a href="/post_ad" class="btn btn-primary mb-3">Post New Ad</a>
+{% for ad in ads %}
 <div class="listings-container">
     <!-- Apartment Card 1 -->
     <div class="apartment-card">
@@ -18,13 +19,13 @@ Apartments for Rent
             <span class="availability-badge">Available Now</span>
             <h2 class="card-title" style="margin-bottom: 5px;">Apartment for Rent</h2>
             <div class="full-address">
-                <i class="fas fa-map-marker-alt"></i> House A-12, Road 7, Gulshan, Dhaka
+                <i class="fas fa-map-marker-alt"></i> {{ ad.Address }}
             </div>
         </div>
         
         <div class="card-highlights">
             <div class="card-price">
-                <span class="price-amount">25,000 BDT</span>
+                <span class="price-amount">{{ ad.Rent_Per_Month }}</span>
                 <span class="price-period">/month</span>
             </div>
             
@@ -79,6 +80,13 @@ Apartments for Rent
     </div>
 
 </div>
+{% endfor %}
+{% if not ads %}
+<div class="no-ads-message">
+    <h3>No Ads Available</h3>
+    <p>It seems there are no ads available at the moment. Please check back later or post a new ad.</p>
+</div>
+{% endif %}
 
 {% block js %}
 <script>
