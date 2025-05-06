@@ -22,84 +22,88 @@ Apartments for Rent
                 <i class="fas fa-map-marker-alt"></i> {{ ad.Address }}
             </div>
         </div>
-        
+
         <div class="card-highlights">
             <div class="card-price">
                 <span class="price-amount">{{ ad.Rent_Per_Month }}</span>
                 <span class="price-period">/month</span>
             </div>
-            
+
             <div class="quick-features">
-                <span><i class="fas fa-bed"></i> 3</span>
-                <span><i class="fas fa-bath"></i> 2</span>
-                <span><i class="fas fa-parking" style="margin-top: 2.5px;"></i>Have Parking</span>
+                <span><i class="fas fa-bed"></i>{{ ad.Bedrooms }}</span>
+                <span><i class="fas fa-bath"></i>{{ ad.Bathrooms }}</span>
+                <span><i class="fas fa-parking" style="margin-top: 2.5px;"></i>Parking: {{ ad.Parking }}</span>
             </div>
         </div>
-        
+
         <div class="card-actions">
-            <a href="tel:+8801711123456" class="call-btn">
-                <i class="fas fa-phone"></i> Call
+            <a class="call-btn" href="tel:{{ ad.Phone_Number }}">
+                <i class="fas fa-phone"></i> {{ ad.Phone_Number }}
             </a>
             <button class="details-btn" onclick="toggleDetails(this)">
-                <i class="fas fa-info-circle"></i> Details
+                <i class="fas fa-info-circle"></i> See Details
             </button>
         </div>
-        
+
         <div class="card-details" style="display: none;">
             <div class="details-grid">
                 <div class="detail-item">
-                    <span class="detail-label">Building:</span>
-                    <span>A-12</span>
+                    <span class="detail-label">Building: </span>
+                    <span>{{ ad.Building_Number }}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-label">Apartment:</span>
-                    <span>5B</span>
+                    <span class="detail-label">Apartment: </span>
+                    <span>{{ ad.Apartment_Number }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Available:</span>
-                    <span>01-May-2025</span>
+                    <span>{{ ad.Available_From_Date }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Advance:</span>
-                    <span>50,000 BDT</span>
+                    <span>{{ ad.Advance_Payment }}</span>
                 </div>
             </div>
-            
+
             <div class="features-list">
-                <div class="feature-item"><i class="fas fa-users"></i> Family Only</div>
-                <div class="feature-item"><i class="fas fa-shield-alt"></i> 24/7 Security</div>
-                <div class="feature-item"><i class="fas fa-water"></i> 24/7 Water</div>
+                <div class="feature-item"><i class="fas fa-users"></i>{{ ad.Tenant_Type }}</div>
+                <div class="feature-item"><i class="fas fa-shield-alt"></i>{{ ad.Security }}</div>
+                    <div class="feature-item"><i class="fas fa-water"></i>{{ ad.Water }}</div>
+                </div>
+
+                <div class="full-description">
+                    <h6>Restrictions</h6 >
+                    <p>{{ ad.Restrictions }}</p>
+                </div>
+
+                <div class="full-description">
+                    <h5>Description</h5>
+                    <p>{{ ad.Description }}</p>
+                </div>
             </div>
-            
-            <div class="full-description">
-                <h5>Description</h5>
-                <p>This beautiful apartment is located in the prestigious Gulshan area. It features modern amenities, spacious rooms, and is ideal for families looking for comfort and security.</p>
-            </div>
-            
         </div>
+
     </div>
+    {% endfor %}
+    {% if not ads %}
+    <div class="no-ads-message">
+        <h3>No Ads Available</h3>
+        <p>It seems there are no ads available at the moment. Please check back later or post a new ad.</p>
+    </div>
+    {% endif %}
 
-</div>
-{% endfor %}
-{% if not ads %}
-<div class="no-ads-message">
-    <h3>No Ads Available</h3>
-    <p>It seems there are no ads available at the moment. Please check back later or post a new ad.</p>
-</div>
-{% endif %}
-
-{% block js %}
-<script>
-function toggleDetails(button) {
-    const detailsSection = button.closest('.apartment-card').querySelector('.card-details');
-    if (detailsSection.style.display === 'none') {
-        detailsSection.style.display = 'block';
-        button.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Details';
-    } else {
-        detailsSection.style.display = 'none';
-        button.innerHTML = '<i class="fas fa-info-circle"></i> Details';
-    }
-}
-</script>
-{% endblock %}
-{% endblock %}
+    {% block js %}
+    <script>
+        function toggleDetails(button) {
+            const detailsSection = button.closest('.apartment-card').querySelector('.card-details');
+            if (detailsSection.style.display === 'none') {
+                detailsSection.style.display = 'block';
+                button.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Details';
+            } else {
+                detailsSection.style.display = 'none';
+                button.innerHTML = '<i class="fas fa-info-circle"></i> Details';
+            }
+        }
+    </script>
+    {% endblock %}
+    {% endblock %}
