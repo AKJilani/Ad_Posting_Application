@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session, flash
+from flask import Blueprint, render_template, request, redirect, session, flash, jsonify
 from conn import get_connection
 
 bp = Blueprint('post_routes', __name__)
@@ -12,7 +12,6 @@ def dashboard():
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM ad_apartment WHERE user_id=? ORDER BY Post_Date DESC", (session['user_id'],))
     ads = cursor.fetchall()
-    print(ads)  # Debugging line to check the fetched ads
     conn.close()
 
     return render_template('dashboard.html', ads=ads)
@@ -49,4 +48,59 @@ def post_ad():
         flash('Ad posted successfully!')
         return redirect('/dashboard')
 
-    return render_template('post_ad.html')
+    return render_template('post_ad.html', ad=None)
+
+@bp.route('/edit_ad_flat/<int:id>', methods=['GET'])
+def edit_ad_flat(id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM ad_apartment WHERE Id = ?", (id,))
+    ad_data = cursor.fetchone()
+    conn.close()
+
+    if ad_data:
+        # Convert to dictionary if you're using tuple fetch
+        keys = [description[0] for description in cursor.description]
+        ad_dict = dict(zip(keys, ad_data))
+
+        return render_template('update_ad.html', ad=ad_dict, is_edit=True)
+    else:
+        flash("Ad not found", "danger")
+        return redirect('/dashboard')
+
+
+@bp.route('/delete_ad_flat/<int:ad_id>', methods=['DELETE'])
+def delete_ad_flat(ad_id):
+    if 'user_id' not in session:
+        return jsonify(success=False), 403
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM ad_apartment WHERE Id=? AND user_id=?", (ad_id, session['user_id']))
+    conn.commit()
+    conn.close()
+    return jsonify(success=True)
+
+@bp.route('/mark_available_flat/<int:ad_id>', methods=['POST'])
+def mark_available_flat(ad_id):
+    if 'user_id' not in session:
+        return jsonify(success=False), 403
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE ad_apartment SET Ad_Active_Status=0 WHERE Id=? AND user_id=?", (ad_id, session['user_id']))
+    conn.commit()
+    conn.close()
+    return jsonify(success=True)
+
+@bp.route('/mark_not_available_flat/<int:ad_id>', methods=['POST'])
+def mark_not_available_flat(ad_id):
+    if 'user_id' not in session:
+        return jsonify(success=False), 403
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE ad_apartment SET Ad_Active_Status=1 WHERE Id=? AND user_id=?", (ad_id, session['user_id']))
+    conn.commit()
+    conn.close()
+    return jsonify(success=True)

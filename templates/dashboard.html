@@ -10,15 +10,35 @@ Apartments for Rent
 {% endblock %}
 
 {% block content %}
-<a href="/post_ad" class="btn btn-primary mb-3">Post New Ad</a>
+<a href="/post_ad" class="btn-edit-dlt-etc btn btn-primary mb-3">Post New Ad</a>
 
-<div class="listings-container">
+<div class="listings-container-user-dashboard">
     {% for ad in ads %}
     <!-- Apartment Card -->
     <div class="apartment-card" id="card-{{ ad.Id }}">
         <div class="card-header">
-            <span class="availability-badge">Available Now</span>
-            <h2 class="card-title" style="margin-bottom: 5px;">Apartment for Rent</h2>
+            <button
+            onclick="window.location.href='/edit_ad_flat/{{ ad.Id }}'"
+            class="btn-edit-dlt-etc btn btn-primary btn-sm edit-btn-ad-flat-{{ ad.Id }}"> Edit</button>
+            <button class="btn-edit-dlt-etc btn btn-primary btn-sm delete-btn-ad-flat-{{ ad.Id }}"
+                onclick="deleteAd('{{ ad.Id }}')">Delete</button>
+            <button class="btn-edit-dlt-etc btn btn-primary btn-sm not-available-btn-ad-flat-{{ ad.Id }}"
+                onclick="markAsNotAvailable('{{ ad.Id }}')">Mark as Not
+                Available</button>
+            <button class="btn-edit-dlt-etc btn btn-primary btn-sm available-btn-ad-flat-{{ ad.Id }}"
+                onclick="markAsAvailable('{{ ad.Id }}')">Mark as
+                Available</button>
+            <div class="ad-title-active-status-div">
+                <h2 class="card-title" style="margin-bottom: 5px; margin-top: 5px;">Apartment for Rent</h2>
+                <h6>
+                    Status: 
+                    {% if ad.Ad_Active_Status == 0 %}
+                        <span style="color: green; font-weight: bold;">Active</span>
+                    {% else %}
+                        <span style="color: red; font-weight: bold;">InActive</span>
+                    {% endif %}
+                </h6>                
+            </div>
             <div class="full-address">
                 <i class="fas fa-map-marker-alt"></i> {{ ad.Address }}
             </div>
@@ -62,7 +82,7 @@ Apartments for Rent
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal('{{ ad.Id }}')">&times;</span>
         <h3 class="modal-title">Apartment Details</h3>
-        
+
         <div class="modal-grid">
             <div class="modal-detail-item">
                 <span class="modal-detail-label">Building:</span>
@@ -89,7 +109,7 @@ Apartments for Rent
                 <span>{{ ad.Address }}</span>
             </div>
         </div>
-        
+
         <div class="modal-section">
             <h4 class="modal-section-title">Features</h4>
             <div class="modal-features">
@@ -101,12 +121,12 @@ Apartments for Rent
                 <div class="modal-feature-item"><i class="fas fa-parking"></i>Parking: {{ ad.Parking }}</div>
             </div>
         </div>
-        
+
         <div class="modal-section">
             <h4 class="modal-section-title">Restrictions</h4>
             <p>{{ ad.Restrictions }}</p>
         </div>
-        
+
         <div class="modal-section">
             <h4 class="modal-section-title">Description</h4>
             <p>{{ ad.Description }}</p>
@@ -122,23 +142,23 @@ Apartments for Rent
         document.getElementById(`modal-${adId}`).style.display = "block";
         document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
     }
-    
+
     // Close modal function
     function closeModal(adId) {
         document.getElementById(`modal-${adId}`).style.display = "none";
         document.body.style.overflow = "auto"; // Restore scrolling
     }
-    
+
     // Close modal when clicking outside of it
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         if (event.target.classList.contains('modal')) {
             event.target.style.display = "none";
             document.body.style.overflow = "auto";
         }
     }
-    
+
     // Close modal with escape key
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function (event) {
         if (event.key === "Escape") {
             const modals = document.getElementsByClassName('modal');
             for (let i = 0; i < modals.length; i++) {
@@ -149,27 +169,64 @@ Apartments for Rent
             }
         }
     });
-    
+
     // Add hover effect to show "See Details" more prominently
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const cards = document.querySelectorAll('.apartment-card');
-        
+
         cards.forEach(card => {
             const btn = card.querySelector('.details-btn');
-            
-            card.addEventListener('mouseenter', function() {
+
+            card.addEventListener('mouseenter', function () {
                 btn.style.backgroundColor = '#007bff';
                 btn.style.color = 'white';
             });
-            
-            card.addEventListener('mouseleave', function() {
+
+            card.addEventListener('mouseleave', function () {
                 btn.style.backgroundColor = '';
                 btn.style.color = '';
             });
         });
     });
+    // Function to delete ad
+    function deleteAd(adId) {
+        if (!confirm("Are you sure you want to delete this ad?")) return;
 
-    
+        fetch(`/delete_ad_flat/${adId}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`card-${adId}`).remove();
+                } else {
+                    alert("Failed to delete ad.");
+                }
+            });
+    }
+    //Function to mark as available ad
+    function markAsAvailable(adId) {
+        fetch(`/mark_available_flat/${adId}`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Marked as available.");
+                } else {
+                    alert("Failed to mark as available.");
+                }
+            });
+    }
+    //Function to mark as Not availabel ad
+    function markAsNotAvailable(adId) {
+        fetch(`/mark_not_available_flat/${adId}`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Marked as not available.");
+                } else {
+                    alert("Failed to mark as not available.");
+                }
+            });
+    }
+
 </script>
 {% endblock %}
 {% endblock %}

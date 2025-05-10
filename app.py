@@ -13,7 +13,7 @@ app.register_blueprint(post_routes.bp)
 def home():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM ad_apartment ORDER BY Post_Date DESC")
+    cursor.execute("SELECT * FROM ad_apartment where Ad_Active_Status=0 ORDER BY Post_Date DESC")
     ads = cursor.fetchall()
     conn.close()
     return render_template('home.html', ads=ads)

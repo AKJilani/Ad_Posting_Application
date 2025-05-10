@@ -26,6 +26,6 @@ def login():
 
 @bp.route('/logout')
 def logout():
-    session.clear()  # Clear all session data
+    session.clear()
     flash('🔒 You have been logged out successfully.', 'info')
-    return redirect('/')  # Redirect to login or homepage
+    return redirect('/') 
