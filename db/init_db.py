@@ -44,8 +44,6 @@ CREATE TABLE IF NOT EXISTS ad_apartment (
     Available_From_Date DATE NOT NULL,
     Advance_Payment REAL NOT NULL,
     Tenant_Type TEXT NOT NULL,
-    Security TEXT NOT NULL,
-    Water TEXT NOT NULL,
     Description TEXT NOT NULL,
     Restrictions TEXT NOT NULL,
     Post_Date TEXT DEFAULT CURRENT_TIMESTAMP,

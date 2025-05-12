@@ -31,14 +31,14 @@ def post_ad():
         cursor.execute("""
             INSERT INTO ad_apartment (
                 Building_Number, Apartment_Type, Apartment_Number, Bedrooms, Bathrooms,
-                Parking, Tenant_Type, Security, Water, Available_From_Date,
+                Parking, Tenant_Type, Available_From_Date,
                 Rent_Per_Month, Advance_Payment, Phone_Number, Address, Restrictions,
                 Description, user_id
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             data['building_no'], data['Apartment_Type'], data['Apartment_Number'], data['Bedrooms'], data['Bathrooms'],
-            data['Parking_Facility'], data['Tenant_Type'], data['Security'], data['Water'], data['Available_From_Date'],
+            data['Parking_Facility'], data['Tenant_Type'], data['Available_From_Date'],
             data['Rent_Per_Month'], data['Advance_Payment'], data['Phone_Number'], data['Address'], data['Restrictions'],
             data['Description'], session['user_id']
         ))
