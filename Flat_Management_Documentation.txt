@@ -1,35 +1,28 @@
-# Flat Management Project Documentation
+# Flat Management System Documentation
 
-## Overview
-The Flat Management project is a web application built using Flask. It allows users to register, log in, post classified ads, and view ads posted by others. This documentation provides step-by-step instructions to set up and run the project.
-
----
+## Project Overview
+The Flat Management System is a web application built using Flask. It allows users to register, log in, post advertisements for apartments, and manage their listings. The application uses SQLite as the database.
 
 ## Prerequisites
-Before starting, ensure you have the following installed:
-- Python 3.12 or later
-- SQLite (comes pre-installed with Python)
-- A code editor like Visual Studio Code
-
----
+- Python 3.7 or higher
+- Flask
+- SQLite
 
 ## Project Structure
 ```
 Flat_Management/
 ├── app.py
 ├── conn.py
-├── requirements.txt
-├── run.py
 ├── db/
-│   ├── flat.db
 │   └── init_db.py
 ├── routes/
-│   ├── __init__.py
 │   ├── login_routes.py
 │   ├── post_routes.py
-│   ├── register_routes.py
+│   └── register_routes.py
 ├── static/
+│   ├── favicon.ico
 │   ├── css/
+│   │   ├── ad_apartment.css
 │   │   └── styles.css
 │   └── js/
 │       └── scripts.js
@@ -39,55 +32,38 @@ Flat_Management/
 │   ├── home.html
 │   ├── login.html
 │   ├── post_ad.html
-│   └── register.html
+│   ├── register.html
+│   └── update_ad.html
+├── requirements.txt
+└── run.py
 ```
 
----
-
-## Setting Up the Project
-
-### Step 1: Create a Project Folder
-Create a folder named `Flat_Management` on your system.
-
-### Step 2: Set Up a Virtual Environment
-1. Open a terminal in the project folder and run:
-   ```bash
-   python -m venv venvFlat
-   ```
-2. Activate the virtual environment:
-   - On Windows:
-     ```bash
-     venvFlat\Scripts\activate
-     ```
-   - On macOS/Linux:
-     ```bash
-     source venvFlat/bin/activate
-     ```
-
-### Step 3: Install Required Libraries
-1. Create a `requirements.txt` file and add the following:
-   ```
-   flask
-   ```
-2. Install the dependencies:
+## Setup Instructions
+1. Clone the repository or download the project files.
+2. Navigate to the project directory.
+3. Install the required Python packages:
    ```bash
    pip install -r requirements.txt
    ```
+4. Initialize the database:
+   ```bash
+   python db/init_db.py
+   ```
+5. Run the application:
+   ```bash
+   python run.py
+   ```
+6. Open your browser and navigate to `http://127.0.0.1:5000`.
 
----
-
-## File-by-File Instructions
+## Code Files
 
 ### `app.py`
-This is the main application file. It initializes the Flask app and registers the routes.
-
-**Code:**
 ```python
 from flask import Flask, render_template, request, redirect, session, url_for
 from conn import get_connection
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'aspdfkNM35cv@dfggh5s6fgsgt@s098765436e@4f6ggh@jBDSDASw@rekfpas@dkfpoa@sdok@f96a4d@s6@5sea5@df61as@d3f1Q@WDYF@HD@YG1K@UI@L13K@DF3D'
 
 from routes import register_routes, login_routes, post_routes
 app.register_blueprint(register_routes.bp)
@@ -98,18 +74,16 @@ app.register_blueprint(post_routes.bp)
 def home():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT ads.*, users.username FROM ads JOIN users ON users.id = ads.user_id ORDER BY date_posted DESC")
+    cursor.execute("SELECT * FROM ad_apartment where Ad_Active_Status=0 ORDER BY Post_Date DESC")
     ads = cursor.fetchall()
     conn.close()
     return render_template('home.html', ads=ads)
+
+if __name__ == '__main__':
+    app.run(debug=True)
 ```
 
----
-
 ### `conn.py`
-This file contains the database connection logic.
-
-**Code:**
 ```python
 import sqlite3
 
@@ -119,78 +93,7 @@ def get_connection():
     return conn
 ```
 
----
-
-### `run.py`
-This file runs the Flask application.
-
-**Code:**
-```python
-from app import app
-
-if __name__ == '__main__':
-    app.run(debug=True)
-```
-
----
-
-### `db/init_db.py`
-This file initializes the database and creates the required tables.
-
-**Code:**
-```python
-import sqlite3
-
-conn = sqlite3.connect('db/flat.db')
-cursor = conn.cursor()
-
-# Create users table
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    Apartment_Type TEXT NOT NULL UNIQUE,
-    Apartment_Number TEXT NOT NULL UNIQUE,
-    Parking_Number TEXT NOT NULL UNIQUE,
-    username TEXT NOT NULL UNIQUE,
-    email TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL
-)
-''')
-
-# Create ads table
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS ads (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    description TEXT NOT NULL,
-    price REAL,
-    user_id INTEGER,
-    date_posted TEXT DEFAULT CURRENT_TIMESTAMP
-)
-''')
-
-conn.commit()
-conn.close()
-
-print("✅ Database and tables created successfully.")
-```
-
----
-
-### `routes/__init__.py`
-This file initializes the routes module.
-
-**Code:**
-```python
-# This file is intentionally left blank to mark the folder as a Python package.
-```
-
----
-
 ### `routes/login_routes.py`
-Handles user login and logout functionality.
-
-**Code:**
 ```python
 from flask import Blueprint, render_template, request, redirect, session, flash
 from conn import get_connection
@@ -220,19 +123,14 @@ def login():
 
 @bp.route('/logout')
 def logout():
-    session.clear()  # Clear all session data
+    session.clear()
     flash('🔒 You have been logged out successfully.', 'info')
-    return redirect('/login')  # Redirect to login or homepage
+    return redirect('/')
 ```
 
----
-
 ### `routes/post_routes.py`
-Manages the dashboard and posting of new ads.
-
-**Code:**
 ```python
-from flask import Blueprint, render_template, request, redirect, session
+from flask import Blueprint, render_template, request, redirect, session, flash, jsonify
 from conn import get_connection
 
 bp = Blueprint('post_routes', __name__)
@@ -244,39 +142,46 @@ def dashboard():
 
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM ads WHERE user_id=? ORDER BY date_posted DESC", (session['user_id'],))
+    cursor.execute("SELECT * FROM ad_apartment WHERE user_id=? ORDER BY Post_Date DESC", (session['user_id'],))
     ads = cursor.fetchall()
     conn.close()
 
     return render_template('dashboard.html', ads=ads)
 
-@bp.route('/post-ad', methods=['GET', 'POST'])
+@bp.route('/post_ad', methods=['GET', 'POST'])
 def post_ad():
     if 'user_id' not in session:
         return redirect('/login')
 
     if request.method == 'POST':
-        title = request.form['title']
-        desc = request.form['description']
-        price = request.form['price']
-
+        data = request.form
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO ads (title, description, price, user_id) VALUES (?, ?, ?, ?)",
-                       (title, desc, price, session['user_id']))
+
+        cursor.execute("""
+            INSERT INTO ad_apartment (
+                Building_Number, Apartment_Type, Apartment_Number, Bedrooms, Bathrooms,
+                Parking, Tenant_Type, Available_From_Date,
+                Rent_Per_Month, Advance_Payment, Phone_Number, Address, Restrictions,
+                Description, user_id
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            data['building_no'], data['Apartment_Type'], data['Apartment_Number'], data['Bedrooms'], data['Bathrooms'],
+            data['Parking_Facility'], data['Tenant_Type'], data['Available_From_Date'],
+            data['Rent_Per_Month'], data['Advance_Payment'], data['Phone_Number'], data['Address'], data['Restrictions'],
+            data['Description'], session['user_id']
+        ))
+
         conn.commit()
         conn.close()
+        flash('Ad posted successfully!')
         return redirect('/dashboard')
 
-    return render_template('post_ad.html')
+    return render_template('post_ad.html', ad=None)
 ```
 
----
-
 ### `routes/register_routes.py`
-Handles user registration.
-
-**Code:**
 ```python
 from flask import Blueprint, render_template, request, redirect, flash
 import sqlite3
@@ -317,24 +222,92 @@ def register():
     return render_template('register.html')
 ```
 
-### Templates
+### `db/init_db.py`
+```python
+import sqlite3
 
-#### `templates/base.html`
-This is the base template that provides the common structure for all pages.
+conn = sqlite3.connect('db/flat.db')
+cursor = conn.cursor()
 
-**Code:**
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Apartment_Type TEXT NOT NULL UNIQUE,
+    Apartment_Number TEXT NOT NULL UNIQUE,
+    Parking_Number TEXT NOT NULL UNIQUE,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+)
+''')
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS ad_apartment (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Building_Number INTEGER NOT NULL,
+    Apartment_Type TEXT NOT NULL,
+    Apartment_Number TEXT NOT NULL,
+    Address TEXT NOT NULL,
+    Rent_Per_Month REAL NOT NULL,
+    Bedrooms INTEGER NOT NULL,
+    Bathrooms INTEGER NOT NULL,
+    Parking TEXT NOT NULL,
+    Phone_Number TEXT NOT NULL,    
+    Available_From_Date DATE NOT NULL,
+    Advance_Payment REAL NOT NULL,
+    Tenant_Type TEXT NOT NULL,
+    Description TEXT NOT NULL,
+    Restrictions TEXT NOT NULL,
+    Post_Date TEXT DEFAULT CURRENT_TIMESTAMP,
+    user_id INTEGER,
+    Ad_Active_Status INTEGER DEFAULT 0 NOT NULL
+)
+''')
+
+conn.commit()
+conn.close()
+```
+
+### `requirements.txt`
+```pip-requirements
+blinker==1.9.0
+click==8.1.8
+colorama==0.4.6
+Flask==3.1.0
+itsdangerous==2.2.0
+Jinja2==3.1.6
+MarkupSafe==3.0.2
+Werkzeug==3.1.3
+```
+
+### `run.py`
+```python
+from app import app
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+## Templates
+
+### `base.html`
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Classified Ads{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% block css %}
+<!-- All CSS Files will be Loaded here -->
+    {% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+    <nav class="navbar navbar-expand-lg fixed-top px-4">
         <a class="navbar-brand" href="/">Flat Management</a>
+        <a href="/" class="btn btn-outline-light btn-sm">Home</a>
         <div class="ms-auto">
             {% if session.get('username') %}
                 <span class="text-white me-2">Hi, {{ session.username }}</span>
@@ -347,7 +320,7 @@ This is the base template that provides the common structure for all pages.
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container mt-4 main-content-div">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -364,214 +337,696 @@ This is the base template that provides the common structure for all pages.
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    {% block js %}
+<!-- All JS Files will be Loaded here -->
+    {% endblock %}
 </body>
 </html>
 ```
 
----
-
-#### `templates/dashboard.html`
-This template displays the user's dashboard with their ads.
-
-**Code:**
+### `dashboard.html`
 ```html
-{% extends 'base.html' %}
-{% block title %}Your Dashboard{% endblock %}
-{% block content %}
-<h2>My Ads</h2>
-<a href="/post-ad" class="btn btn-primary mb-3">Post New Ad</a>
-{% if ads %}
-    <ul class="list-group">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block title %}Dashboard{% endblock %}
+    {% block content %}
+    <h1>Dashboard</h1>
+    <div class="row">
         {% for ad in ads %}
-            <li class="list-group-item">
-                <strong>{{ ad.title }}</strong><br>
-                {{ ad.description }}<br>
-                <small>{{ ad.price }} BDT</small>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>You have not posted any ads yet.</p>
-{% endif %}
-{% endblock %}
-```
-
----
-
-#### `templates/home.html`
-This template displays all recent ads on the homepage.
-
-**Code:**
-```html
-{% extends 'base.html' %}
-{% block title %}All Ads{% endblock %}
-{% block content %}
-<h2>Recent Ads</h2>
-<div class="row">
-    {% for ad in ads %}
-        <div class="col-md-4 mb-4">
-            <div class="card">
+        <div class="col-md-4">
+            <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">{{ ad.title }}</h5>
-                    <p class="card-text">{{ ad.description }}</p>
-                    <p><strong>Price:</strong> {{ ad.price }} BDT</p>
-                    <p><small class="text-muted">Posted by {{ ad.username }} on {{ ad.date_posted }}</small></p>
+                    <h5 class="card-title">{{ ad.Apartment_Type }}</h5>
+                    <p class="card-text">{{ ad.Description }}</p>
+                    <a href="#" class="btn btn-primary">View Details</a>
                 </div>
             </div>
         </div>
-    {% else %}
-        <p>No ads found.</p>
-    {% endfor %}
-</div>
-{% endblock %}
+        {% endfor %}
+    </div>
+    {% endblock %}
+</body>
+</html>
 ```
 
----
-
-#### `templates/login.html`
-This template is for the login page.
-
-**Code:**
+### `home.html`
 ```html
-{% extends 'base.html' %}
-{% block title %}Login{% endblock %}
-{% block content %}
-<h2>Login</h2>
-<form method="POST" class="w-50 mx-auto">
-    <div class="mb-3">
-        <label>Username</label>
-        <input type="text" name="username" class="form-control" required>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block title %}Home{% endblock %}
+    {% block content %}
+    <h1>Home</h1>
+    <div class="row">
+        {% for ad in ads %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ ad.Apartment_Type }}</h5>
+                    <p class="card-text">{{ ad.Description }}</p>
+                    <a href="#" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
-    <div class="mb-3">
-        <label>Password</label>
-        <input type="password" name="password" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
-{% endblock %}
+    {% endblock %}
+</body>
+</html>
 ```
 
----
-
-#### `templates/post_ad.html`
-This template is for posting a new ad.
-
-**Code:**
+### `login.html`
 ```html
-{% extends 'base.html' %}
-{% block title %}Post an Ad{% endblock %}
-{% block content %}
-<h2>Post a New Ad</h2>
-<form method="POST" class="w-50 mx-auto">
-    <div class="mb-3">
-        <label>Title</label>
-        <input type="text" name="title" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label>Description</label>
-        <textarea name="description" class="form-control" required></textarea>
-    </div>
-    <div class="mb-3">
-        <label>Price</label>
-        <input type="number" name="price" step="0.01" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-success">Post Ad</button>
-</form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block title %}Login{% endblock %}
+    {% block content %}
+    <h1>Login</h1>
+    <form method="POST" action="/login">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    {% endblock %}
+</body>
+</html>
 ```
 
----
-
-#### `templates/register.html`
-This template is for the registration page.
-
-**Code:**
+### `post_ad.html`
 ```html
-{% extends 'base.html' %}
-{% block title %}Register{% endblock %}
-{% block content %}
-<h2>Create an Account</h2>
-<form method="POST" class="w-50 mx-auto">
-    <div class="mb-3">
-        <label>Apartment Type</label>
-        <input type="text" name="apartment_type" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label>Apartment Number</label>
-        <input type="text" name="apartment_number" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label>Parking Number</label>
-        <input type="text" name="parking_number" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label>Username</label>
-        <input type="text" name="username" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label>Email</label>
-        <input type="email" name="email" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label>Password</label>
-        <input type="password" name="password" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-success">Register</button>
-</form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Ad</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block title %}Post Ad{% endblock %}
+    {% block content %}
+    <h1>Post Ad</h1>
+    <form method="POST" action="/post_ad">
+        <div class="mb-3">
+            <label for="building_no" class="form-label">Building Number</label>
+            <input type="text" class="form-control" id="building_no" name="building_no" required>
+        </div>
+        <div class="mb-3">
+            <label for="Apartment_Type" class="form-label">Apartment Type</label>
+            <input type="text" class="form-control" id="Apartment_Type" name="Apartment_Type" required>
+        </div>
+        <div class="mb-3">
+            <label for="Apartment_Number" class="form-label">Apartment Number</label>
+            <input type="text" class="form-control" id="Apartment_Number" name="Apartment_Number" required>
+        </div>
+        <div class="mb-3">
+            <label for="Bedrooms" class="form-label">Bedrooms</label>
+            <input type="number" class="form-control" id="Bedrooms" name="Bedrooms" required>
+        </div>
+        <div class="mb-3">
+            <label for="Bathrooms" class="form-label">Bathrooms</label>
+            <input type="number" class="form-control" id="Bathrooms" name="Bathrooms" required>
+        </div>
+        <div class="mb-3">
+            <label for="Parking_Facility" class="form-label">Parking Facility</label>
+            <input type="text" class="form-control" id="Parking_Facility" name="Parking_Facility" required>
+        </div>
+        <div class="mb-3">
+            <label for="Tenant_Type" class="form-label">Tenant Type</label>
+            <input type="text" class="form-control" id="Tenant_Type" name="Tenant_Type" required>
+        </div>
+        <div class="mb-3">
+            <label for="Available_From_Date" class="form-label">Available From Date</label>
+            <input type="date" class="form-control" id="Available_From_Date" name="Available_From_Date" required>
+        </div>
+        <div class="mb-3">
+            <label for="Rent_Per_Month" class="form-label">Rent Per Month</label>
+            <input type="number" class="form-control" id="Rent_Per_Month" name="Rent_Per_Month" required>
+        </div>
+        <div class="mb-3">
+            <label for="Advance_Payment" class="form-label">Advance Payment</label>
+            <input type="number" class="form-control" id="Advance_Payment" name="Advance_Payment" required>
+        </div>
+        <div class="mb-3">
+            <label for="Phone_Number" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="Phone_Number" name="Phone_Number" required>
+        </div>
+        <div class="mb-3">
+            <label for="Address" class="form-label">Address</label>
+            <input type="text" class="form-control" id="Address" name="Address" required>
+        </div>
+        <div class="mb-3">
+            <label for="Restrictions" class="form-label">Restrictions</label>
+            <input type="text" class="form-control" id="Restrictions" name="Restrictions" required>
+        </div>
+        <div class="mb-3">
+            <label for="Description" class="form-label">Description</label>
+            <textarea class="form-control" id="Description" name="Description" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Ad</button>
+    </form>
+    {% endblock %}
+</body>
+</html>
 ```
 
-### Static Files
+### `register.html`
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block title %}Register{% endblock %}
+    {% block content %}
+    <h1>Register</h1>
+    <form method="POST" action="/register">
+        <div class="mb-3">
+            <label for="apartment_type" class="form-label">Apartment Type</label>
+            <input type="text" class="form-control" id="apartment_type" name="apartment_type" required>
+        </div>
+        <div class="mb-3">
+            <label for="apartment_number" class="form-label">Apartment Number</label>
+            <input type="text" class="form-control" id="apartment_number" name="apartment_number" required>
+        </div>
+        <div class="mb-3">
+            <label for="parking_number" class="form-label">Parking Number</label>
+            <input type="text" class="form-control" id="parking_number" name="parking_number" required>
+        </div>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+    {% endblock %}
+</body>
+</html>
+```
 
-#### `static/css/styles.css`
-This file contains the CSS styles for the project.
+### `update_ad.html`
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Ad</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block title %}Update Ad{% endblock %}
+    {% block content %}
+    <h1>Update Ad</h1>
+    <form method="POST" action="/update_ad">
+        <div class="mb-3">
+            <label for="building_no" class="form-label">Building Number</label>
+            <input type="text" class="form-control" id="building_no" name="building_no" value="{{ ad.Building_Number }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Apartment_Type" class="form-label">Apartment Type</label>
+            <input type="text" class="form-control" id="Apartment_Type" name="Apartment_Type" value="{{ ad.Apartment_Type }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Apartment_Number" class="form-label">Apartment Number</label>
+            <input type="text" class="form-control" id="Apartment_Number" name="Apartment_Number" value="{{ ad.Apartment_Number }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Bedrooms" class="form-label">Bedrooms</label>
+            <input type="number" class="form-control" id="Bedrooms" name="Bedrooms" value="{{ ad.Bedrooms }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Bathrooms" class="form-label">Bathrooms</label>
+            <input type="number" class="form-control" id="Bathrooms" name="Bathrooms" value="{{ ad.Bathrooms }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Parking_Facility" class="form-label">Parking Facility</label>
+            <input type="text" class="form-control" id="Parking_Facility" name="Parking_Facility" value="{{ ad.Parking }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Tenant_Type" class="form-label">Tenant Type</label>
+            <input type="text" class="form-control" id="Tenant_Type" name="Tenant_Type" value="{{ ad.Tenant_Type }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Available_From_Date" class="form-label">Available From Date</label>
+            <input type="date" class="form-control" id="Available_From_Date" name="Available_From_Date" value="{{ ad.Available_From_Date }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Rent_Per_Month" class="form-label">Rent Per Month</label>
+            <input type="number" class="form-control" id="Rent_Per_Month" name="Rent_Per_Month" value="{{ ad.Rent_Per_Month }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Advance_Payment" class="form-label">Advance Payment</label>
+            <input type="number" class="form-control" id="Advance_Payment" name="Advance_Payment" value="{{ ad.Advance_Payment }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Phone_Number" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="Phone_Number" name="Phone_Number" value="{{ ad.Phone_Number }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Address" class="form-label">Address</label>
+            <input type="text" class="form-control" id="Address" name="Address" value="{{ ad.Address }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Restrictions" class="form-label">Restrictions</label>
+            <input type="text" class="form-control" id="Restrictions" name="Restrictions" value="{{ ad.Restrictions }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="Description" class="form-label">Description</label>
+            <textarea class="form-control" id="Description" name="Description" required>{{ ad.Description }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Ad</button>
+    </form>
+    {% endblock %}
+</body>
+</html>
+```
 
-**Code:**
-```css
-body {
+## Static Files
+
+### `favicon.ico`
+Binary file, not displayed.
+
+### `css/ad_apartment.css`
+/* Listings Container - Grid Layout */
+.listings-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin: 0 auto;
+}
+
+/* Listings Container - user dashboard Layout */
+.listings-container-user-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 20px;
+    margin: 0 auto;
+}
+
+/* Apartment Card */
+.apartment-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.apartment-card:hover {
+    transform: translateY(-5px);
+}
+
+.ad-title-active-status-div {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Card Header */
+.card-header {
+    padding: 15px;
+    position: relative;
+    border-bottom: 1px solid #eee;
+}
+
+.availability-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #32cd32;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    color: #2c3e50;
+    margin-right: 60px;
+}
+
+/* Card Highlights */
+.card-highlights {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-price {
+    color: #2980b9;
+}
+
+.price-amount {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.price-period {
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.quick-features {
+    display: flex;
+    gap: 12px;
+}
+
+.quick-features span {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #555;
+}
+
+.quick-features i {
+    margin-right: 4px;
+    color: #7f8c8d;
+}
+
+/* Card Actions */
+.card-actions {
+    display: flex;
+    border-top: 1px solid #eee;
+}
+
+.call-btn, .details-btn {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+    color: #2980b9;
+    text-decoration: none;
+}
+
+.call-btn {
+    border-right: 1px solid #eee;
+}
+
+.call-btn:hover, .details-btn:hover {
     background-color: #f8f9fa;
-    font-family: 'Segoe UI', sans-serif;
 }
 
-h2 {
-    margin-bottom: 20px;
+.call-btn i, .details-btn i {
+    margin-right: 5px;
 }
 
-form {
+/* Card Details (Hidden by default) */
+.card-details {
+    padding: 15px;
+    border-top: 1px solid #eee;
+    background-color: #f8f9fa;
+}
+
+/* Details Grid */
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.detail-item {
+    font-size: 14px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #555;
+    margin-right: 5px;
+}
+
+/* Features List */
+.features-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.feature-item {
+    background-color: #e3f2fd;
+    color: #2980b9;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+
+.feature-item i {
+    margin-right: 5px;
+}
+
+/* Full Description */
+.full-description {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* Full Address */
+.full-address {
+    font-size: 14px;
+    color: #7f8c8d;
+    display: flex;
+    align-items: center;
+}
+
+.full-address i {
+    margin-right: 5px;
+    color: #e74c3c;
+}
+
+.btn-edit-dlt-etc {
+  background-color: #196a8a;
+  border: #0d536e;
+}
+
+.btn-edit-dlt-etc:hover {
+  background-color: #0f4c64;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1350px) {
+  .listings-container {
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+    .listings-container {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .listings-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* MODAL START */
+ /* Modal styles */
+ .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+  }
+
+  .modal-content {
     background-color: #fff;
+    margin: 5% auto;
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 80%;
+    max-width: 700px;
+    animation: modalFadeIn 0.3s;
+    position: relative;
+  }
 
-.card {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
+  @keyframes modalFadeIn {
+    from {opacity: 0; transform: translateY(-30px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
 
-.alert {
-    margin-top: 10px;
+  .close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+  }
+
+  .close-modal:hover {
+    color: #333;
+  }
+
+  .modal-title {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .apartment-card {
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .apartment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+
+  .details-btn {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .details-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background: rgba(255,255,255,0.2);
+    transition: height 0.3s;
+  }
+
+  .details-btn:hover::after {
+    height: 100%;
+  }
+
+  .modal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .modal-detail-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+  }
+
+  .modal-detail-label {
+    font-weight: bold;
+    color: #495057;
+  }
+
+  .modal-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .modal-feature-item {
+    padding: 8px 12px;
+    background: #e9ecef;
+    border-radius: 20px;
+    font-size: 14px;
+  }
+
+  .modal-feature-item i {
+    margin-right: 5px;
+  }
+
+  .modal-section {
+    margin-bottom: 20px;
+  }
+
+  .modal-section-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+/* Add your custom styles for ad_apartment here */
+```
+
+### `css/styles.css`
+```css
+/* Add your custom styles here */
+body {
+    padding-top: 56px;
+}
+.main-content-div {
+    margin-top: 20px;
 }
 ```
 
----
-
-#### `static/js/scripts.js`
-This file contains JavaScript for handling UI interactions.
-
-**Code:**
+### `js/scripts.js`
 ```javascript
-document.addEventListener("DOMContentLoaded", function () {
-    // Auto-dismiss alerts after 3 seconds
-    const alerts = document.querySelectorAll('.alert');
-    if (alerts) {
-        setTimeout(() => {
-            alerts.forEach(alert => {
-                alert.classList.remove('show');
-                alert.classList.add('fade');
-            });
-        }, 3000);
-    }
-
-    // You can add form validation or confirmation here later
-});
+// Add your custom JavaScript here
 ```
