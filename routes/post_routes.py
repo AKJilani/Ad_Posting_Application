@@ -69,6 +69,51 @@ def edit_ad_flat(id):
         return redirect('/dashboard')
 
 
+@bp.route('/update_ad_flat/<int:id>', methods=['POST'])
+def update_ad_flat(id):
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    if request.method == 'POST':
+        data = request.form
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # UPDATE with all necessary fields
+        cursor.execute("""
+            UPDATE ad_apartment SET
+                Building_Number = ?, 
+                Apartment_Type = ?, 
+                Apartment_Number = ?, 
+                Bedrooms = ?, 
+                Bathrooms = ?,
+                Parking = ?, 
+                Tenant_Type = ?, 
+                Available_From_Date = ?,
+                Rent_Per_Month = ?, 
+                Advance_Payment = ?, 
+                Phone_Number = ?, 
+                Address = ?, 
+                Restrictions = ?,
+                Description = ?
+            WHERE Id = ? AND user_id = ?
+        """, (
+            data['building_no'], data['Apartment_Type'], data['Apartment_Number'], 
+            data['Bedrooms'], data['Bathrooms'], data['Parking_Facility'], 
+            data['Tenant_Type'], data['Available_From_Date'],
+            data['Rent_Per_Month'], data['Advance_Payment'], data['Phone_Number'], 
+            data['Address'], data['Restrictions'], data['Description'], 
+            id, session['user_id']
+        ))
+
+        conn.commit()
+        conn.close()
+        flash('Ad updated successfully!')
+        return redirect('/dashboard')
+
+    return redirect('/dashboard')
+
+
 @bp.route('/delete_ad_flat/<int:ad_id>', methods=['DELETE'])
 def delete_ad_flat(ad_id):
     if 'user_id' not in session:

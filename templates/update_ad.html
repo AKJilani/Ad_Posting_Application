@@ -1,27 +1,27 @@
 {% extends 'base.html' %}
-{% block title %}Post an Ad{% endblock %}
+{% block title %}Update Ad{% endblock %}
 {% block content %}
-<h2>Post a New Ad</h2>
-<form method="POST" class="mx-auto">
+<h2>Update Your Ad</h2>
+<form method="POST" action="/update_ad_flat/{{ ad.Id }}" class="mx-auto">
     <div class="d-flex flex-wrap gap-3 mb-2">
-        {% for label, name, type in [
-        ('Building No:', 'building_no', 'text'),
-        ('Apartment Type:', 'Apartment_Type', 'text'),
-        ('Apartment Number:', 'Apartment_Number', 'text'),
-        ('Bedrooms:', 'Bedrooms', 'number'),
-        ('Bathrooms:', 'Bathrooms', 'number'),
-        ('Parking Facility:', 'Parking_Facility', 'text'),
-        ('Tenant Type:', 'Tenant_Type', 'text'),
-        ('Available From:', 'Available_From_Date', 'date'),
-        ('Rent Per Month:', 'Rent_Per_Month', 'number'),
-        ('Advance Payment:', 'Advance_Payment', 'number'),
-        ('Phone Number:', 'Phone_Number', 'tel'),
-        ('Address:', 'Address', 'text')
+        {% for label, name, type, db_field in [
+        ('Building No:', 'building_no', 'text', 'Building_Number'),
+        ('Apartment Type:', 'Apartment_Type', 'text', 'Apartment_Type'),
+        ('Apartment Number:', 'Apartment_Number', 'text', 'Apartment_Number'),
+        ('Bedrooms:', 'Bedrooms', 'number', 'Bedrooms'),
+        ('Bathrooms:', 'Bathrooms', 'number', 'Bathrooms'),
+        ('Parking Facility:', 'Parking_Facility', 'text', 'Parking'),
+        ('Tenant Type:', 'Tenant_Type', 'text', 'Tenant_Type'),
+        ('Available From:', 'Available_From_Date', 'date', 'Available_From_Date'),
+        ('Rent Per Month:', 'Rent_Per_Month', 'number', 'Rent_Per_Month'),
+        ('Advance Payment:', 'Advance_Payment', 'number', 'Advance_Payment'),
+        ('Phone Number:', 'Phone_Number', 'tel', 'Phone_Number'),
+        ('Address:', 'Address', 'text', 'Address')
         ] %}
         <div class="flex-grow-1" style="min-width: 200px; max-width: 300px;">
             <label class="form-label">{{ label }}</label>
             <input type="{{ type }}" name="{{ name }}" class="form-control" required
-                value="{{ ad[name] if ad else '' }}">
+                value="{{ ad[db_field] if ad and db_field in ad else '' }}">
         </div>
         {% endfor %}
     </div>
@@ -39,7 +39,10 @@
         </div>
     </div>
     <div class="d-flex justify-content-center gap-3 mt-4">
-        <a href="/edit_ad_flat/{{ ad.Id }}" class="btn btn-primary">Update Ad</a>
+        <button type="submit" class="btn btn-primary px-4 py-2">
+            Update Ad
+        </button>
+        <a href="/dashboard" class="btn btn-secondary px-4 py-2">Cancel</a>
     </div>
 </form>
 {% endblock %}

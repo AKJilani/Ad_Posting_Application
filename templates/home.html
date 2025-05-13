@@ -24,7 +24,7 @@ Apartments for Rent
 
         <div class="card-highlights">
             <div class="card-price">
-                <span class="price-amount">{{ ad.Rent_Per_Month }}</span>
+                <span class="price-amount">{{ "{:,.0f}".format(ad.Rent_Per_Month) }}</span>
                 <span class="price-period">/month</span>
             </div>
 
@@ -76,11 +76,11 @@ Apartments for Rent
             </div>
             <div class="modal-detail-item">
                 <span class="modal-detail-label">Advance Payment:</span>
-                <span>{{ ad.Advance_Payment }}</span>
+                <span>{{ "{:,.0f}".format(ad.Advance_Payment) }}</span>
             </div>
             <div class="modal-detail-item">
                 <span class="modal-detail-label">Rent:</span>
-                <span>{{ ad.Rent_Per_Month }} /month</span>
+                <span>{{ "{:,.0f}".format(ad.Rent_Per_Month) }} /month</span>
             </div>
             <div class="modal-detail-item">
                 <span class="modal-detail-label">Address:</span>
